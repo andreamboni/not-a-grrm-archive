@@ -13,7 +13,7 @@ func initializeRoutes(router *gin.Engine) {
 		// v1.GET("/items", item.ListItemsHandler)
 		// v1.GET("/itemById", item.ListItemByIdHandler)
 		// v1.GET("/deletedItems", item.ListDeletedItems)
-		v1.POST("/createPost", handler.CreatePostHandler)
+		v1.POST("/saveBlogPost", handler.SaveBlogPostHandler)
 		// v1.PUT("/updateItem", item.UpdateItemHandler)
 		// v1.PUT("/recoverItem", item.RecoverItemHandler)
 		// v1.DELETE("/deleteItem", item.DeleteItemHandler)

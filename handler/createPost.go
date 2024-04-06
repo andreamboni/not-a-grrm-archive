@@ -7,17 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreatePostHandler(context *gin.Context) {
-	request := CreatePostRequest{}
+func SaveBlogPostHandler(context *gin.Context) {
+	request := CreateBlogPostRequest{}
 	context.BindJSON(&request)
 
-	post := model.Post{
-		Image:   request.Image,
-		Title:   request.Title,
-		URL:     request.URL,
-		Date:    request.Date,
-		Content: request.Content,
+	blogPost := model.BlogPost{
+		PostImage: request.PostImage,
+		Title:     request.Title,
+		URL:       request.URL,
+		TheDate:   request.TheDate,
+		Content:   request.Content,
 	}
 
-	fmt.Println(post)
+	fmt.Println(blogPost)
 }
