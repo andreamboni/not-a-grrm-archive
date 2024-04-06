@@ -5,5 +5,5 @@ type CreatePostRequest struct {
 	Title   string
 	URL     string
 	Date    string
-	Content Content
+	Content []string
 }
