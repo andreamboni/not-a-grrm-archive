@@ -19,5 +19,5 @@ func SaveBlogPostHandler(context *gin.Context) {
 		Content:   request.Content,
 	}
 
-	fmt.Println(blogPost)
+	fmt.Println("Not a GRRM Archive: " + blogPost.Title + ": " + blogPost.TheDate)
 }
