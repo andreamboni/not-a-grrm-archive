@@ -5,4 +5,5 @@ use (
 	./handler
 	./model
 	./router
+	./config
 )
