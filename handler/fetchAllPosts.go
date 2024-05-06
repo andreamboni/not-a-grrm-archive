@@ -26,13 +26,18 @@ func FetchAllBlogPosts(ctx *gin.Context) {
 
 	results := []bson.M{}
 	if err = cursor.All(context.TODO(), &results); err != nil {
-		log.Fatal(err)
+		ctx.Header("Content-type", "application/json")
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "no posts were found",
+		})
 	}
 
-	ctx.Header("Content-type", "application/json")
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "blog posts retrivied successfully",
-		"data":    results,
-	})
+	if len(results) > 0 {
+		ctx.Header("Content-type", "application/json")
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": "blog posts retrivied successfully",
+			"data":    results,
+		})
+	}
 
 }

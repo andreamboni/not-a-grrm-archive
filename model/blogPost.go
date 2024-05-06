@@ -1,7 +1,7 @@
 package model
 
 type BlogPost struct {
-	ID        int64
+	ID        string
 	PostImage string
 	Title     string
 	URL       string
