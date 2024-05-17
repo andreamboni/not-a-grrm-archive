@@ -42,8 +42,10 @@ func SaveBlogPostHandler(ctx *gin.Context) {
 	} else {
 		ctx.Header("Content-type", "application/json")
 		ctx.JSON(http.StatusForbidden, gin.H{
-			"message":  "Blogpost already exists",
-			"blogPost": blogPost,
+			"message": "Blogpost already exists",
+			"title":   blogPost.Title,
+			"url":     blogPost.URL,
+			"theDate": blogPost.TheDate,
 		})
 	}
 
