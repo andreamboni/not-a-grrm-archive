@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	b64 "encoding/base64"
-	"log"
 	"net/http"
 
 	"github.com/andreamboni/not-a-grrm-archive/config"
@@ -15,6 +14,7 @@ import (
 
 func SaveBlogPostHandler(ctx *gin.Context) {
 	request := CreateBlogPostRequest{}
+	logger := config.NewLogger("SaveBlogPostHandler")
 	ctx.BindJSON(&request)
 
 	blogPost := model.BlogPost{
@@ -29,42 +29,32 @@ func SaveBlogPostHandler(ctx *gin.Context) {
 	coll, err := config.GetMongoDBCollection()
 
 	if err != nil {
-		panic(err)
+		logger.Errorf("error getting db connection %v", err)
 	}
 
-	if !recordExists(blogPost.ID, coll) {
+	if !postExists(blogPost.ID, coll) {
 		coll.InsertOne(context.TODO(), blogPost)
-		ctx.Header("Content-type", "application/json")
-		ctx.JSON(http.StatusOK, gin.H{
-			"message":  "Blogpost archived",
-			"blogPost": blogPost,
-		})
+		SendSuccess(ctx, "Blogpost archived", blogPost)
 	} else {
-		ctx.Header("Content-type", "application/json")
-		ctx.JSON(http.StatusForbidden, gin.H{
-			"message": "Blogpost already exists",
-			"title":   blogPost.Title,
-			"url":     blogPost.URL,
-			"theDate": blogPost.TheDate,
-		})
+		SendError(ctx, http.StatusForbidden, "Blogpost with title: '"+blogPost.Title+"' already exists")
 	}
-
 }
 
 func createBlogHash(title string, theDate string, url string) string {
 	return b64.StdEncoding.EncodeToString([]byte(title + theDate + url))
 }
 
-func recordExists(blogId string, collection *mongo.Collection) bool {
+func postExists(blogId string, collection *mongo.Collection) bool {
+	logger := config.NewLogger("postsExists")
 	query := bson.M{"id": blogId}
 	cursor, err := collection.Find(context.TODO(), query)
 	if err != nil {
-		log.Fatal(err)
+		logger.Errorf("error trying to check if blog post exist: %v", err)
 	}
 
 	results := []bson.M{}
 	if err = cursor.All(context.TODO(), &results); err != nil {
-		log.Fatal(err)
+		logger.Errorf("error trying to add results: %v", err)
 	}
 
 	return len(results) > 0

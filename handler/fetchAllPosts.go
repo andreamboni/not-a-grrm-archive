@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"log"
 	"net/http"
 
 	"github.com/andreamboni/not-a-grrm-archive/config"
@@ -12,32 +11,26 @@ import (
 
 func FetchAllBlogPosts(ctx *gin.Context) {
 
+	logger := config.NewLogger("fetch all blogposts")
 	coll, err := config.GetMongoDBCollection()
 
 	if err != nil {
-		panic(err)
+		logger.Errorf("error trying to get db configs: %v", err)
 	}
 
 	query := bson.M{}
 	cursor, err := coll.Find(context.TODO(), query)
 	if err != nil {
-		log.Fatal(err)
+		logger.Errorf("error trying to find posts: %v", err)
 	}
 
 	results := []bson.M{}
 	if err = cursor.All(context.TODO(), &results); err != nil {
-		ctx.Header("Content-type", "application/json")
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "no posts were found",
-		})
+		SendError(ctx, http.StatusNotFound, "no blog posts were found")
 	}
 
 	if len(results) > 0 {
-		ctx.Header("Content-type", "application/json")
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "blog posts retrivied successfully",
-			"data":    results,
-		})
+		SendSuccess(ctx, "blog posts retrieved successfully", results)
 	}
 
 }
